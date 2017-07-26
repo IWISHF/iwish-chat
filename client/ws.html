@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Websocket client</title>
+    <script type="text/javascript">
+        function log(arg) {
+            output = document.getElementById("output");
+            var p = document.createElement("p");
+            p.style.wordWrap = 'break-word';
+            p.textContent = arg;
+            output.appendChild(p);
+            console.log(arg);
+        }
+
+        function sendMessage(arg) {
+            ws.send(arg);
+            log('Message sent');
+        }
+
+        function setup() {
+            ws = new WebSocket('ws://echo.websocket.org/echo');
+            ws.onopen = function(e) {
+                log('Connected');
+                sendMessage("Hello World");
+            }
+            ws.onclose = function(e) {
+                log('Disconnected' + e.reason);
+            }
+            ws.onerror = function(e) {
+                log('Error');
+            }
+            ws.onmessage = function(e) {
+                log('Message received:' + e.data);
+                ws.close();
+            }
+        }
+        setup();
+    </script>
+</head>
+<body>
+  <div id="output"></div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Websocket Image Drop</title>
+    <script type="text/javascript">
+        ws = new WebSocket('ws://echo.websocket.org/echo');
+
+        function sendMessage(arg) {
+            ws.send(arg);
+            console.log('Message sent');
+        }
+
+        ws.onopen = function(e) {
+            console.log('Connected');
+        }
+        ws.onclose = function(e) {
+            console.log('Disconnected' + e.reason);
+        }
+        ws.onerror = function(e) {
+            console.log('Error');
+        }
+        ws.onmessage = function(e) {
+            console.log('231234');
+            var blob = e.data;
+            console.log('Message:' + blob.size + 'bytes');
+            var uri = URL.createObjectURL(blob);
+            var img = document.createElement('img');
+            img.src = uri;
+            document.body.appendChild(img);
+        }
+        document.ondrop = function(e) {
+            document.body.style.backgroundColor = "#fff";
+            try {
+                e.preventDefault();
+                handleFileDrop(e.dataTransfer.files[0]);
+                return false;
+            } catch(err) {
+                console.log(err);
+            }
+        }
+        document.ondragover = function(e) {
+            e.preventDefault();
+            document.body.style.backgroundColor = '#6fff41';
+        }
+        document.ondragleave = function() {
+            document.body.style.backgroundColor = '#fff';
+        }
+        function handleFileDrop(file) {
+            var reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = function() {
+                console.log('sending:' + file.name);
+                console.log(reader);
+                ws.send(reader.result);
+            }
+        }
+    </script>
+</head>
+<body>
+  <h1>Drop Image Here</h1>
+</body>
+</html>
